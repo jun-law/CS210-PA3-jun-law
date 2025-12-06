@@ -1,5 +1,3 @@
-// test commit
-
 #include <iostream>
 #include <vector>
 #include <cstdlib>
@@ -90,6 +88,7 @@ void printPath(pair<int,int> exitcell,
                const vector<vector<int>>& parent_c,
                int ent_r, int ent_c)
 {
+    cout << "CALLING PRINT PATH!" << endl;
     int r = exitcell.first;
     int c = exitcell.second;
 
@@ -98,6 +97,8 @@ void printPath(pair<int,int> exitcell,
     // Walk backward from exit to entrance
     while (!(r == ent_r && c == ent_c)) {
         path.push_back({r, c});
+        cout << "pushing back (" << r << ", " << c << ")" << endl;
+        cout << "r = " << r << ", c = " << c << endl;
         int pr = parent_r[r][c];
         int pc = parent_c[r][c];
         r = pr;
@@ -115,10 +116,66 @@ void printPath(pair<int,int> exitcell,
 // STUDENTS IMPLEMENT DFS HERE
 // Add arguments, return type, and logic
 // ----------------------------------------------------------
-// bool dfs(……) {
-//     // Your code here
-// }
 
+bool dfs(int r, int c,
+         const vector<vector<int>>& maze,
+         vector<vector<bool>>& visited,
+         vector<vector<int>>& parent_r,
+         vector<vector<int>>& parent_c,
+         int exit_r, int exit_c) {
+
+    // traverses correct rows and columns, checks bounds perfectly
+    visited[r][c] = true;
+    cout << "coord: " << "(" << r << ", " << c << ")" << endl;
+    // cout << "exit coordinates: " << "(" << exit_r << ", " << exit_c << ")" << endl;
+    // move in all 4 directions
+    for (int i = 0; i < 4; i++) {
+        int temp_r = r + dr[i];
+        int temp_c = c + dc[i];
+        // check for boundaries
+        if (temp_r < 0 || temp_c < 0 || temp_r > maze.size()-1 || temp_c > maze[0].size()-1) {
+            // cout << "(" << temp_r << ", " << temp_c << ") is OUT OF BOUNDS" << endl;
+        }
+        else {
+            // BASE CASE
+            if (temp_r == exit_r && temp_c == exit_c) {
+                visited[temp_r][temp_c] = true;
+                // the row parent OF the new coordinates (temp_r, temp_c) is r
+                parent_r[temp_r][temp_c] = r;
+                // the col parent OF the new coordinates (temp_r, temp_c) is c
+                parent_c[temp_r][temp_c] = c;
+
+                cout << "FOUND EXIT: " << "(" << temp_r << ", " << temp_c << ") = (" << exit_r << ", " << exit_c << ")" << endl;
+                return true;
+            }
+            else {
+                // if the next spot is a wall (1), skip it
+                // if (maze[temp_r][temp_c] == 1) {
+                    // cout << "wall coordinate: " << "(" << temp_r << ", " << temp_c << ")" << endl;
+                    // visited[temp_r][temp_c] = true; // cell visited
+                // }
+
+                // if the next spot is available (0) AND not visited
+                if (maze[temp_r][temp_c] == 0 && visited[temp_r][temp_c] == false) {
+                    visited[temp_r][temp_c] = true; // cell visited
+
+                    // the row parent OF the new coordinates (temp_r, temp_c) is r
+                    parent_r[temp_r][temp_c] = r;
+                    // the col parent OF the new coordinates (temp_r, temp_c) is c
+                    parent_c[temp_r][temp_c] = c;
+
+                    // temp_r and temp_c are the new arguments
+                    if (dfs(temp_r, temp_c, maze, visited, parent_r, parent_c, exit_r, exit_c)) {
+                        return true;
+                    }
+                }
+            }
+        }
+
+    }
+    cout << "dead end found" << endl;
+    return false;
+}
 
 // ----------------------------------------------------------
 // MAIN PROGRAM (students add DFS calls and logic)
@@ -157,17 +214,41 @@ int main() {
     // STUDENT WORK:
     // Call your DFS, track visited, and fill parent_r and parent_c
     // ------------------------------------------------------
-    // bool found = dfs(ent_r, ent_c, maze, visited, parent_r, parent_c, exit_r, exit_c);
+    bool found = dfs(ent_r, ent_c, maze, visited, parent_r, parent_c, exit_r, exit_c);
+
+    // debug statements
+    for (unsigned long int i = 0; i < parent_r.size(); i++) {
+        for (unsigned long int j = 0; j < parent_r[i].size(); j++) {
+            cout << parent_r[i][j] << " ";
+        }
+        cout << endl;
+    }
+    cout << "col" << endl;
+    for (unsigned long int i = 0; i < parent_c.size(); i++) {
+        for (unsigned long int j = 0; j < parent_c[i].size(); j++) {
+            cout << parent_c[i][j] << " ";
+        }
+        cout << endl;
+    }
+
+
+    cout << "TEST: found = ";
+    if (found == true) {
+        cout << "TRUE" << endl;
+    }
+    else {
+        cout << "FALSE" << endl;
+    }
 
     // ------------------------------------------------------
     // STUDENT WORK:
     // If found, print the path
     // ------------------------------------------------------
-    // if (found) {
-    //     printPath(exitcell, parent_r, parent_c, ent_r, ent_c);
-    // } else {
-    //     cout << "\nNo path exists.\n";
-    // }
+      if (found) {
+          printPath(exitcell, parent_r, parent_c, ent_r, ent_c);
+      } else {
+         cout << "\nNo path exists.\n";
+      }
 
-    return 0;
+     return 0;
 }
