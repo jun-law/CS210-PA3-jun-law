@@ -133,7 +133,6 @@ bool dfs(int r, int c,
          int exit_r, int exit_c) {
 
     visited[r][c] = true;
-    // cout << "coord: " << "(" << r << ", " << c << ")" << endl;
 
     // move in all 4 directions
     for (int i = 0; i < 4; i++) {
@@ -153,13 +152,13 @@ bool dfs(int r, int c,
                 parent_r[temp_r][temp_c] = r;
                 parent_c[temp_r][temp_c] = c;
 
-                // cout << "FOUND EXIT: " << "(" << temp_r << ", " << temp_c << ") = (" << exit_r << ", " << exit_c << ")" << endl;
                 return true;
             }
             else {
                 // available cell
                 if (maze[temp_r][temp_c] == 0 && visited[temp_r][temp_c] == false) {
                     visited[temp_r][temp_c] = true;
+                    cout << "(" << temp_r << ", " << temp_c << ")\n";
 
                     // update parent coordinates
                     parent_r[temp_r][temp_c] = r;
