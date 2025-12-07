@@ -88,7 +88,6 @@ void printPath(pair<int,int> exitcell,
                const vector<vector<int>>& parent_c,
                int ent_r, int ent_c)
 {
-    cout << "CALLING PRINT PATH!" << endl;
     int r = exitcell.first;
     int c = exitcell.second;
 
@@ -97,8 +96,6 @@ void printPath(pair<int,int> exitcell,
     // Walk backward from exit to entrance
     while (!(r == ent_r && c == ent_c)) {
         path.push_back({r, c});
-        cout << "pushing back (" << r << ", " << c << ")" << endl;
-        cout << "r = " << r << ", c = " << c << endl;
         int pr = parent_r[r][c];
         int pc = parent_c[r][c];
         r = pr;
@@ -116,7 +113,18 @@ void printPath(pair<int,int> exitcell,
 // STUDENTS IMPLEMENT DFS HERE
 // Add arguments, return type, and logic
 // ----------------------------------------------------------
-
+/*
+ * This function performs a depth first search on the maze for a path from the entrance to the exit
+ * @param r - the row index of the starting coordinates
+ * @param c - the column index of the starting coordinates
+ * @param maze - the maze containing 0's and 1's for open cells and walls
+ * @param visited - a 2D vector to track which cell coordinates have been visited
+ * @param parent_r - a 2D vector to track the row index of each parent coordinate
+ * @param parent_c - a 2D vector to track the column index of each parent coordinate
+ * @param exit_r - the row index of the exit coordinate
+ * @param exit_c - the column index of the exit coordinate
+ * @return true if a path from the entrance to the exit exists
+ */
 bool dfs(int r, int c,
          const vector<vector<int>>& maze,
          vector<vector<bool>>& visited,
@@ -124,55 +132,48 @@ bool dfs(int r, int c,
          vector<vector<int>>& parent_c,
          int exit_r, int exit_c) {
 
-    // traverses correct rows and columns, checks bounds perfectly
     visited[r][c] = true;
-    cout << "coord: " << "(" << r << ", " << c << ")" << endl;
-    // cout << "exit coordinates: " << "(" << exit_r << ", " << exit_c << ")" << endl;
+    // cout << "coord: " << "(" << r << ", " << c << ")" << endl;
+
     // move in all 4 directions
     for (int i = 0; i < 4; i++) {
         int temp_r = r + dr[i];
         int temp_c = c + dc[i];
-        // check for boundaries
+
+        // check boundaries
         if (temp_r < 0 || temp_c < 0 || temp_r > maze.size()-1 || temp_c > maze[0].size()-1) {
             // cout << "(" << temp_r << ", " << temp_c << ") is OUT OF BOUNDS" << endl;
         }
         else {
-            // BASE CASE
+            // base case
             if (temp_r == exit_r && temp_c == exit_c) {
                 visited[temp_r][temp_c] = true;
-                // the row parent OF the new coordinates (temp_r, temp_c) is r
+
+                // update parent coordinates
                 parent_r[temp_r][temp_c] = r;
-                // the col parent OF the new coordinates (temp_r, temp_c) is c
                 parent_c[temp_r][temp_c] = c;
 
-                cout << "FOUND EXIT: " << "(" << temp_r << ", " << temp_c << ") = (" << exit_r << ", " << exit_c << ")" << endl;
+                // cout << "FOUND EXIT: " << "(" << temp_r << ", " << temp_c << ") = (" << exit_r << ", " << exit_c << ")" << endl;
                 return true;
             }
             else {
-                // if the next spot is a wall (1), skip it
-                // if (maze[temp_r][temp_c] == 1) {
-                    // cout << "wall coordinate: " << "(" << temp_r << ", " << temp_c << ")" << endl;
-                    // visited[temp_r][temp_c] = true; // cell visited
-                // }
-
-                // if the next spot is available (0) AND not visited
+                // available cell
                 if (maze[temp_r][temp_c] == 0 && visited[temp_r][temp_c] == false) {
-                    visited[temp_r][temp_c] = true; // cell visited
+                    visited[temp_r][temp_c] = true;
 
-                    // the row parent OF the new coordinates (temp_r, temp_c) is r
+                    // update parent coordinates
                     parent_r[temp_r][temp_c] = r;
-                    // the col parent OF the new coordinates (temp_r, temp_c) is c
                     parent_c[temp_r][temp_c] = c;
 
-                    // temp_r and temp_c are the new arguments
+                    // recurse
                     if (dfs(temp_r, temp_c, maze, visited, parent_r, parent_c, exit_r, exit_c)) {
                         return true;
                     }
                 }
             }
         }
-
     }
+    // no other directions available
     cout << "dead end found" << endl;
     return false;
 }
@@ -215,30 +216,6 @@ int main() {
     // Call your DFS, track visited, and fill parent_r and parent_c
     // ------------------------------------------------------
     bool found = dfs(ent_r, ent_c, maze, visited, parent_r, parent_c, exit_r, exit_c);
-
-    // debug statements
-    for (unsigned long int i = 0; i < parent_r.size(); i++) {
-        for (unsigned long int j = 0; j < parent_r[i].size(); j++) {
-            cout << parent_r[i][j] << " ";
-        }
-        cout << endl;
-    }
-    cout << "col" << endl;
-    for (unsigned long int i = 0; i < parent_c.size(); i++) {
-        for (unsigned long int j = 0; j < parent_c[i].size(); j++) {
-            cout << parent_c[i][j] << " ";
-        }
-        cout << endl;
-    }
-
-
-    cout << "TEST: found = ";
-    if (found == true) {
-        cout << "TRUE" << endl;
-    }
-    else {
-        cout << "FALSE" << endl;
-    }
 
     // ------------------------------------------------------
     // STUDENT WORK:
